@@ -1,4 +1,5 @@
 *.html
+*.txt
 secret.yml
 .DS_Store
 .bundle
