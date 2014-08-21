@@ -47,8 +47,8 @@ class RailsCasts
 
   def scrape_names
     names = []
-    # loop do
-    2.times do
+    loop do
+    # 2.times do
       names += @page.driver.find_css('.episode .screenshot a')
                  .map{|a| a['href'].gsub(%r|/episodes/|, '') }
       begin
@@ -76,15 +76,24 @@ class RailsCasts
   def download_movies(links_file, target)
     system "mkdir -p #{target}"
     open(links_file).each do |line|
-      # filename = line.chomp.gsub(%r|^.*/(\d+-[\w_-]+.mp4)$|) { $1 }
-      # binding.pry
-      # open("#{target}/#{filename}", 'wb') do |file|
-      #   file << open(line.chomp).read
-      # end
+      filename = line.chomp.gsub(%r|^.*/(\d+-[\w_-]+.mp4)$|) { $1 }
+      if File.exist?("#{target}/#{filename}")
+        puts "skip - #{filename}"
+      else
+        puts "downloading... - #{filename}"
+        open("#{target}/#{filename}", 'wb') do |file|
+          file << open(line.chomp).read
+        end
+      end
     end
   end
 end
 
 rc = RailsCasts.new
-rc.save_movie_links('movie_links.txt')
-# rc.download_movies('2_movie_links.txt', 'movies')
+txt = 'movie_links.txt'
+case ARGV[0]
+when 'link'
+  rc.save_movie_links(txt)
+when 'down'
+  rc.download_movies(txt, 'output')
+end

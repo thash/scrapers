@@ -3,3 +3,6 @@
 secret.yml
 .DS_Store
 .bundle
+nohup.log
+
+output
