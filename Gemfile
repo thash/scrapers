@@ -1,13 +1,14 @@
 source 'https://rubygems.org'
 
 gem 'capybara'
-gem 'nokogiri'
+# gem 'nokogiri'
+#
 gem 'pry'
 gem 'activesupport'
+gem 'phantomjs'
 
 group :co_meeting do
   gem 'poltergeist'
-  gem 'phantomjs'
 end
 
 group :railscasts do

@@ -55,7 +55,6 @@ DEPENDENCIES
   activesupport
   capybara
   capybara-webkit
-  nokogiri
   phantomjs
   poltergeist
   pry
