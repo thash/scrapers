@@ -1,5 +1,5 @@
 require 'bundler/setup'
-Bundler.require(:default, :railscasts)
+Bundler.require
 require 'active_support/core_ext/date/calculations'
 
 Capybara.javascript_driver = :webkit

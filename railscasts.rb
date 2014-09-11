@@ -1,5 +1,5 @@
 require 'bundler/setup'
-Bundler.require(:default, :railscasts)
+Bundler.require
 
 require 'yaml'
 require 'capybara/poltergeist'

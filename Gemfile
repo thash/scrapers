@@ -5,11 +5,7 @@ gem 'nokogiri'
 gem 'pry'
 gem 'activesupport'
 
-group :co_meeting do
-  gem 'poltergeist'
-  gem 'phantomjs'
-end
+gem 'poltergeist'
+gem 'phantomjs'
 
-group :railscasts do
-  gem 'capybara-webkit'
-end
+gem 'capybara-webkit'
