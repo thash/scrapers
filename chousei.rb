@@ -5,8 +5,10 @@ require 'active_support/core_ext/date/calculations'
 Capybara.javascript_driver = :webkit
 @page = Capybara::Session.new(:webkit)
 
+OFFSET = 34
+
 def num(date)
-  ((date.year - 2014) * 54) + date.cweek + 35
+  ((date.year - 2014) * 54) + date.cweek + OFFSET
 end
 
 def kouho(start_date)
