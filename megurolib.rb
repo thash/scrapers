@@ -66,6 +66,7 @@ class MeguroLib < Base
   end
 
   private def splite_title(title_with_publisher)
+    return [title_with_publisher, ''] unless title_with_publisher.index('／')
     title_with_publisher.split('／').map(&:strip)
   end
 
