@@ -1,4 +1,4 @@
-require './base'
+require File.expand_path('../base.rb', __FILE__)
 
 class MeguroLib < Base
   self.url = 'http://www.meguro-library.jp/'
@@ -39,9 +39,17 @@ class MeguroLib < Base
     login_successful?
   end
 
-  def reserve(book)
-    puts "reserve: #{book.title}"
-    book.session.find(:xpath, "//a/span[text()[contains(.,'#{book.title}')]]/..").click
+  def reserve(sess, book)
+    cd sess
+    puts "reserve: #{book.title} (#{book.publisher})"
+
+    target_link = s.all(:xpath, '//table[7]/tbody/tr').drop(1).map do |row|
+      if row.find(:css, 'td:nth-child(2)').text.include?(book.title) &&
+          row.find(:css, 'td:nth-child(4)').text.include?(book.publisher)
+        row.find(:css, 'a')
+      end
+    end.find{|a| !a.nil? }
+    target_link.click
     delay
     s.click_link '予約の候補にする'
     delay
@@ -71,12 +79,10 @@ class MeguroLib < Base
   end
 
   class Book
-    attr_reader :session
     attr_accessor :title, :author, :publisher, :published_at
 
-    def initialize(title, author: nil, publisher: nil, published_at: nil, session: nil)
+    def initialize(title, author: nil, publisher: nil, published_at: nil)
       @title         = title
-      @session = session.dup if session
 
       # result list page
       @author        = author
@@ -111,8 +117,7 @@ class MeguroLib < Base
       rows = session.all(:xpath, '//table[7]//tr[td]')
       @books = rows.map do |row|
         tds = row.all(:xpath, 'td')
-        Book.new(tds[1].find('a').text,
-                 session: session.dup,
+        Book.new(tds[1].text.split('[').first.strip,
                  author: tds[2].text,
                  publisher: tds[3].text,
                  published_at: tds[4].text)

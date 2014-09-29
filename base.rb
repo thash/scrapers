@@ -1,3 +1,4 @@
+require 'bundler'
 require 'bundler/setup'
 Bundler.require
 require 'yaml'
@@ -5,9 +6,16 @@ require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/array'
 
+module Kernel
+  def delay(n=3)
+    sleep n
+  end
+end
+
 class Base
   class_attribute :url
-  attr_reader :conf, :session
+  attr_reader :conf
+  attr_accessor :session
 
   def initialize
     @conf = YAML.load(open('secret.yml').read)[self.class.name.underscore]
@@ -20,12 +28,12 @@ class Base
     session
   end
 
-  def top
-    @session.visit self.class.url
+  def cd(other_session)
+    session = other_session
   end
 
-  def delay(n=3)
-    sleep n
+  def top
+    @session.visit self.class.url
   end
 
   def contains_text?(text)
