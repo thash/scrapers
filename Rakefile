@@ -36,7 +36,7 @@ namespace :megurolib do
 
   task :reserving do
     reserving_books = mlib.reserving
-    reserved_books = reserving_books.select{|book| book.status.include?('返却') }
+    reserved_books = reserving_books.select{|book| book.status.include?('確保済') }
     if reserved_books.present?
       first = reserved_books.first
       msg = "@T_Hash 予約していた"
