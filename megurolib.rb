@@ -91,6 +91,8 @@ class MeguroLib < Base
     end
 
     class Borrowing < self
+      attr_reader :due
+
       def initialize(title, publisher, due: nil)
         super(title, publisher: publisher)
         @due = Time.parse(due + ' 23:59:59') if due
@@ -98,6 +100,8 @@ class MeguroLib < Base
     end
 
     class Reserving < self
+      attr_reader :status, :reserved_until
+
       def initialize(title, publisher, status: , reserved_until: nil)
         super(title, publisher: publisher)
         @status = status

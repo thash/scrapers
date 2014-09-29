@@ -5,6 +5,7 @@ require 'yaml'
 require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/array'
+require 'active_support/core_ext/numeric/time'
 
 module Kernel
   def delay(n=3)

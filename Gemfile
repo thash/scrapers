@@ -9,3 +9,5 @@ gem 'poltergeist'
 gem 'phantomjs'
 
 gem 'capybara-webkit'
+
+gem 'twitter'
