@@ -26,10 +26,11 @@ namespace :megurolib do
     borrowing_books = mlib.borrowing
     approaching_books = borrowing_books.select{|book| Time.now.since(3.days) >= book.due }
     if approaching_books.present?
+      first = approaching_books.first
       msg = "@T_Hash "
-      msg += "『#{approaching_books.first.title}』"
+      msg += "『#{first.title}』"
       msg += "など, #{approaching_books.size}冊" if approaching_books.size > 1
-      msg += "の返却日が明後日です."
+      msg += "の返却日がだいたい #{first.due.to_date.to_s} らへんです."
       twitter.update(msg)
     end
   end

@@ -6,3 +6,4 @@ secret.yml
 nohup.log
 
 output
+*.log
