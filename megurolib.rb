@@ -39,6 +39,8 @@ class MeguroLib < Base
     login_successful?
   end
 
+  # TODO: sessionまわりを整頓して連続予約
+  # TODO: シリーズ予約に対応
   def reserve(sess, book)
     cd sess
     puts "reserve: #{book.title} (#{book.publisher})"
