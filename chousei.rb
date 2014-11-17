@@ -5,7 +5,7 @@ require 'active_support/core_ext/date/calculations'
 Capybara.javascript_driver = :webkit
 @page = Capybara::Session.new(:webkit)
 
-OFFSET = 34
+OFFSET = 33
 
 def num(date)
   ((date.year - 2014) * 54) + date.cweek + OFFSET
