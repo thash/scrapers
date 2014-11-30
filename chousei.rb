@@ -5,7 +5,7 @@ require 'active_support/core_ext/date/calculations'
 Capybara.javascript_driver = :webkit
 @page = Capybara::Session.new(:webkit)
 
-OFFSET = 33
+OFFSET = 32
 
 def num(date)
   ((date.year - 2014) * 54) + date.cweek + OFFSET
@@ -28,11 +28,13 @@ end
 @page.visit 'https://chouseisan.com/'
 
 base_date = Date.today.next_week.beginning_of_week
+
 @page.fill_in :name, with: "第#{num(base_date)}回 Bio x IT輪読会"
 @page.fill_in :kouho, with: kouho(base_date)
 @page.find(:css, '#createBtn').click
+sleep 3
 
 p @page.current_url # complete page
 
-p @page.find(:css, 'input').value
+p @page.find(:css, '.honmon input').value
 # => "https://chouseisan.com/schedule/List?h=4d06d87f127d4dae8fd2634764375720201409"
