@@ -119,7 +119,11 @@ class MeguroLib < Base
       @session = session.dup
       @count = session.find(:xpath, '//table[4]//tr/td[1]').text.scan(/\d+/).first.to_i
 
-      # contains books only in first page.
+      # 100件/page 表示
+      session.find(:xpath, '//table[5]//select[@name="WRTCOUNT"]').select('100')
+      session.find(:xpath, '//table[5]//input[@name="relist"]').click
+      delay
+
       rows = session.all(:xpath, '//table[7]//tr[td]')
       @books = rows.map do |row|
         tds = row.all(:xpath, 'td')
