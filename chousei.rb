@@ -42,5 +42,5 @@ sleep 3
 
 p @page.current_url # complete page
 
-p @page.find(:css, '.honmon input').value
+p @page.find(:css, '.honmon input:nth-child(1)').value
 # => "https://chouseisan.com/schedule/List?h=4d06d87f127d4dae8fd2634764375720201409"
