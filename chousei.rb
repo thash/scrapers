@@ -44,3 +44,6 @@ p @page.current_url # complete page
 
 p @page.find(:css, '.honmon input:nth-child(1)').value
 # => "https://chouseisan.com/schedule/List?h=4d06d87f127d4dae8fd2634764375720201409"
+
+puts "第#{num(base_date, opts)}回 Bio x IT輪読会の出欠確認"
+puts "（#{base_date.strftime('%m/%d')} - #{(base_date + 6).strftime('%m/%d')}週）"
