@@ -1,14 +1,20 @@
+#!/usr/bin/env ruby
+
 require 'bundler/setup'
 Bundler.require
 require 'active_support/core_ext/date/calculations'
+require 'optparse'
+
+opts = ARGV.getopts('n:', 'offset:')
 
 Capybara.javascript_driver = :webkit
 @page = Capybara::Session.new(:webkit)
 
-OFFSET = 32
 
-def num(date)
-  ((date.year - 2014) * 54) + date.cweek + OFFSET
+def num(date, opts)
+  return opts['n'].to_i if opts['n']
+  offset = opts['offset'] ? opts['offset'].to_i : 29
+  ((date.year - 2014) * 54) + date.cweek + offset
 end
 
 def kouho(start_date)
@@ -29,7 +35,7 @@ end
 
 base_date = Date.today.next_week.beginning_of_week
 
-@page.fill_in :name, with: "第#{num(base_date)}回 Bio x IT輪読会"
+@page.fill_in :name, with: "第#{num(base_date, opts)}回 Bio x IT輪読会"
 @page.fill_in :kouho, with: kouho(base_date)
 @page.find(:css, '#createBtn').click
 sleep 3
