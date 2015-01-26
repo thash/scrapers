@@ -37,7 +37,7 @@ base_date = Date.today.next_week.beginning_of_week
 
 @page.fill_in :name, with: "第#{num(base_date, opts)}回 Bio x IT輪読会"
 @page.fill_in :kouho, with: kouho(base_date)
-@page.find(:css, '#createBtn').click
+@page.find(:css, '#newEventForm input[type="submit"]').click
 sleep 3
 
 p @page.current_url # complete page
