@@ -5,7 +5,7 @@ Bundler.require
 require 'active_support/core_ext/date/calculations'
 require 'optparse'
 
-opts = ARGV.getopts('n:', 'offset:')
+opts = ARGV.getopts('n:', 'offset:', 'base-date:')
 
 Capybara.javascript_driver = :webkit
 @page = Capybara::Session.new(:webkit)
@@ -33,7 +33,11 @@ end
 
 @page.visit 'https://chouseisan.com/'
 
-base_date = Date.today.next_week.beginning_of_week
+base_date = if opts['base-date']
+              Date.parse(opts['base-date'])
+            else
+              Date.today.next_week.beginning_of_week
+            end
 
 @page.fill_in :name, with: "第#{num(base_date, opts)}回 Bio x IT輪読会"
 @page.fill_in :kouho, with: kouho(base_date)
