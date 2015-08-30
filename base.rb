@@ -1,7 +1,7 @@
 require 'bundler'
-require 'bundler/setup'
 Bundler.require
 require 'yaml'
+require 'logger'
 require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/array'
@@ -16,9 +16,10 @@ end
 class Base
   class_attribute :url
   attr_reader :conf
-  attr_accessor :session
+  attr_accessor :session, :logger
 
   def initialize
+    @logger = Logger.new(STDOUT)
     @conf = YAML.load(open('secret.yml').read)[self.class.name.underscore]
     Capybara.javascript_driver = :webkit
     @session = Capybara::Session.new(:webkit)
@@ -56,7 +57,7 @@ class Base
   end
 
   def scrape_table(query)
-    elem = s.find(*query_with_type(query)) 
+    elem = s.find(*query_with_type(query))
     raise 'not a elem selector' if elem.tag_name != 'table'
     Table.new(elem)
   end
@@ -77,6 +78,7 @@ class Base
     end
 
     class Row
+      attr_reader :element
       def initialize(element)
         @element = element
       end

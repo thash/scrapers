@@ -1,7 +1,17 @@
 require File.expand_path('../base.rb', __FILE__)
+require 'securerandom'
+require 'digest/sha1'
 
 class MeguroLib < Base
   self.url = 'http://www.meguro-library.jp/'
+  attr_reader :dynamo
+
+  def initialize
+    super
+    cred = Aws::Credentials.new(conf['aws_dynamo_key'], conf['aws_dynamo_secret'])
+    # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html
+    @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred)
+  end
 
   def search(str)
     s.visit MeguroLib.url
@@ -15,9 +25,84 @@ class MeguroLib < Base
   def borrowing
     login
     borrowing_table.rows.map do |row|
-      cells = row.cells.map(&:text)
-      Book::Borrowing.new(*splite_title(cells[2]), due: cells[6])
+     cells = row.cells.map(&:text)
+     Book::Borrowing.new(*splite_title(cells[2]),
+                         borrowed_at: cells[4], due: cells[6])
     end
+  end
+
+  # in detail page
+  def register_book
+    unless detail_page?
+      logger.error("[#{__method__}] Not in book detail page.")
+      return false
+    end
+
+    val_of = -> (header) {
+      s.find(:xpath, "//td[./nobr/b[text()='#{header}']]/following-sibling::td").text
+    }
+
+    title  = val_of.call('タイトル').gsub(Moji.han, '')
+    author = val_of.call('著者事項')
+    isbn13 = Lisbn.new(val_of.call('ISBN')).isbn13
+
+    if dynamo.get_item(table_name: :books, key: {isbn: isbn13}).item
+      logger.info("[#{__method__}] skip -- known isbn: (#{isbn13}) #{title}")
+    else
+      dynamo.put_item(table_name: :books,
+                      item: {isbn: isbn13, title: title, author: author})
+      logger.info("[#{__method__}] add -- new book: (#{isbn13}) #{title}")
+    end
+
+    return isbn13
+  end
+
+  def put_borrowing
+    logger.debug("before: #{scan}")
+
+    login
+
+    unless my_page?
+      logger.error("[#{__method__}] Not in mypage.")
+      return false
+    end
+
+    # 行数のみ保存しておき, loop 内で毎回 DOM を取得して処理行数を進めていく
+    rows_count = borrowing_table.rows.count
+    rows_count.times do |i|
+      row = borrowing_table.rows[i]
+      cells = row.cells.map(&:text)
+
+      title = splite_title(cells[2]).first
+      hashed_title = Digest::SHA1.hexdigest(title)
+
+      # 既に登録済のイベントならスキップ
+      event = dynamo.scan(table_name: :events).items.find{|e| e['hashed_title'] == hashed_title && e['type'] == 'borrow' }
+      logger.info("[#{__method__}] skip -- known 'borrow' event for: #{title}") && next if event
+
+      item = {
+        uuid: SecureRandom.uuid,
+        isbn: nil,
+        hashed_title: hashed_title,
+        type: :borrow,
+        date: Date.parse(cells[4]).to_s
+      }
+      dynamo.put_item({ table_name: :events, item: item })
+
+      row.element.find('a').click
+      delay # detail page
+
+      # put into books table, then return back isbn-13 code.
+      isbn = register_book
+      dynamo.put_item({ table_name: :events, item: item.merge(isbn: isbn) }) if isbn
+
+      logger.info("[#{__method__}] add -- 'borrow' event for: (#{isbn}) #{title}")
+
+      s.find(:xpath, '/html/body/table[4]//a[./b]').click
+      delay # 利用状況の一覧ページへ
+    end
+
+    logger.debug("after: #{scan}")
   end
 
   # 予約している資料
@@ -25,7 +110,8 @@ class MeguroLib < Base
     login
     reserving_table.rows.map do |row|
       cells = row.cells.map(&:text)
-      Book::Reserving.new(*splite_title(cells[2]), status: cells[4], reserved_until: cells[5])
+      Book::Reserving.new(*splite_title(cells[2]), status: cells[4],
+                          reserved_at: cells[8], reserved_until: cells[5])
     end
   end
 
@@ -36,7 +122,10 @@ class MeguroLib < Base
     s.fill_in :userpasswd, with: conf['password']
     s.find(:xpath, '//table[4]//tr[2]/td[1]/table//tr[3]/td/input[1]').click
     delay
-    login_successful?
+    unless my_page?
+      logger.error("[#{__method__}] Login failed.")
+      return false
+    end
   end
 
   # TODO: sessionまわりを整頓して連続予約
@@ -47,7 +136,7 @@ class MeguroLib < Base
 
     target_link = s.all(:xpath, '//table[7]/tbody/tr').drop(1).map do |row|
       if row.find(:css, 'td:nth-child(2)').text.include?(book.title) &&
-          row.find(:css, 'td:nth-child(4)').text.include?(book.publisher)
+        row.find(:css, 'td:nth-child(4)').text.include?(book.publisher)
         row.find(:css, 'a')
       end
     end.find{|a| !a.nil? }
@@ -63,22 +152,26 @@ class MeguroLib < Base
     s.click_button '予約する'
   end
 
-  private def login_successful?
+  private def my_page?
             contains_text? 'メールアドレスの確認・変更・削除'
           end
 
+  private def detail_page?
+            contains_text? '資料の詳しい内容'
+          end
+
   private def borrowing_table
-    scrape_table('//form[1]/table[2]')
-  end
+            scrape_table('//form[1]/table[2]')
+          end
 
   private def reserving_table
-    scrape_table('//form[2]/table[2]')
-  end
+            scrape_table('//form[2]/table[2]')
+          end
 
   private def splite_title(title_with_publisher)
-    return [title_with_publisher, ''] unless title_with_publisher.index('／')
-    title_with_publisher.split('／').map(&:strip)
-  end
+            return [title_with_publisher, ''] unless title_with_publisher.index('／')
+            title_with_publisher.split('／').map(&:strip)
+          end
 
   class Book
     attr_accessor :title, :author, :publisher, :published_at
@@ -93,21 +186,23 @@ class MeguroLib < Base
     end
 
     class Borrowing < self
-      attr_reader :due
+      attr_reader :borrowed_at, :due
 
-      def initialize(title, publisher, due: nil)
+      def initialize(title, publisher, borrowed_at: nil, due: nil)
         super(title, publisher: publisher)
+        @borrowed_at = Time.parse(borrowed_at + ' 00:00:00') if borrowed_at
         @due = Time.parse(due + ' 23:59:59') if due
       end
     end
 
     class Reserving < self
-      attr_reader :status, :reserved_until
+      attr_reader :status, :reserved_at, :reserved_until
 
-      def initialize(title, publisher, status: , reserved_until: nil)
+      def initialize(title, publisher, status: , reserved_at: nil, reserved_until: nil)
         super(title, publisher: publisher)
         @status = status
-        @reserved_until = Time.parse(reserved_until + ' 23:59:59') if reserved_until.present?
+        @reserved_at    = Time.parse(reserved_at + ' 00:00:00') if reserved_at
+        @reserved_until = Time.parse(reserved_until + ' 23:59:59') if reserved_until
       end
     end
   end
@@ -133,5 +228,24 @@ class MeguroLib < Base
                  published_at: tds[4].text)
       end
     end
+  end
+
+
+  ############################# DynamoDB debug #############################
+  def clear_all
+    dynamo.scan(table_name: :events).items.each do |item|
+      p dynamo.delete_item(table_name: :events, key: { uuid: item['uuid'] } )
+    end
+    dynamo.scan(table_name: :books).items.each do |item|
+      p dynamo.delete_item(table_name: :books, key: { isbn: item['isbn'] } )
+    end
+    nil
+  end
+
+  def scan
+    {
+      events: dynamo.scan(table_name: :events).items,
+      books: dynamo.scan(table_name: :books).items
+    }
   end
 end
