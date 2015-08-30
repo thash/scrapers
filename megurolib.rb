@@ -81,9 +81,9 @@ class MeguroLib < Base
     s.click_button '予約する'
   end
 
-  def put_all_events
-    ::MeguroLib::Scraper.new(self, :borrow).scrape
-    ::MeguroLib::Scraper.new(self, :reserve).scrape
+  def put_events
+    ::MeguroLib::BorrowScraper.new(self).scrape
+    ::MeguroLib::ReserveScraper.new(self).scrape
   end
 
   private def my_page?

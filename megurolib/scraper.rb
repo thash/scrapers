@@ -1,11 +1,13 @@
 class MeguroLib < Base
   class Scraper
 
-    def initialize(context, type)
+    def initialize(context, type, callback=nil)
       @context = context
       @type = type
       @target_table = type == :borrow ? @context.method(:borrowing_table) : @context.method(:reserving_table)
       @date_column  = type == :borrow ? 4 : 8
+      @shown_hashed_titles = []
+      @callback = callback
     end
 
     def method_missing(name, *args)
@@ -29,6 +31,7 @@ class MeguroLib < Base
 
         title = splite_title(cells[2]).first
         hashed_title = Digest::SHA1.hexdigest(title)
+        @shown_hashed_titles << hashed_title
 
         # 既に登録済のイベントならスキップ
         event = dynamo.scan(table_name: :events).items.find{|e| e['hashed_title'] == hashed_title && e['type'] == @type.to_s }
@@ -42,7 +45,6 @@ class MeguroLib < Base
           date: Date.parse(cells[@date_column]).to_s
         }
         dynamo.put_item({ table_name: :events, item: item })
-
         row.element.find('a').click
         delay # detail page
 
@@ -55,6 +57,7 @@ class MeguroLib < Base
         s.find(:xpath, '/html/body/table[4]//a[./b]').click
         delay # 利用状況の一覧ページへ
       end
+      @callback.call(@shown_hashed_titles) if @callback
       logger.debug("after : #{scan}")
     end
 
@@ -93,6 +96,8 @@ class MeguroLib < Base
 
     def clear_all
      dynamo.scan(table_name: :events).items.each do |item|
+       # return events are hard to reproduce
+       next if item['type'] == 'return'
        p dynamo.delete_item(table_name: :events, key: { uuid: item['uuid'] } )
      end
      dynamo.scan(table_name: :books).items.each do |item|
@@ -102,4 +107,45 @@ class MeguroLib < Base
     end
 
   end
+
+  class BorrowScraper < Scraper
+
+    def initialize(context)
+      callback = -> (shown_hashed_titles) do
+        borrow_events = query_events(:borrow, 60)
+        return_events = query_events(:return, 60)
+        missing_borrowing = borrow_events
+                              .reject{|be| return_events.find{|re| re['hashed_title'] == be['hashed_title'] }}
+                              .reject{|be| shown_hashed_titles.include?(be['hashed_title']) }
+        logger.debug("borrow_events: #{borrow_events}")
+        logger.debug("return_events: #{return_events}")
+        logger.debug("missing_borrowing: #{missing_borrowing}")
+        missing_borrowing.each do |be|
+          dynamo.put_item(table_name: :events,
+                          item: { uuid: SecureRandom.uuid,
+                                  isbn: be['isbn'],
+                                  hashed_title: be['hashed_title'],
+                                  type: :return,
+                                  date: (Date.today - 1).to_s })
+          logger.info("[#{__method__}] add -- 'return' event for: #{be['isbn']}")
+        end
+      end
+      super(context, :borrow, callback)
+      # logger.level = Logger::DEBUG
+    end
+
+    private def query_events(type, past_days)
+              dynamo.query(table_name: :events,
+                           index_name: :type_date_index,
+                           key_conditions: { type: { comparison_operator: :EQ, attribute_value_list: [type.to_s] },
+                                             date: { comparison_operator: :GT, attribute_value_list: [(Date.today - past_days).to_s] } } ).items
+            end
+  end
+
+  class ReserveScraper < Scraper
+    def initialize(context)
+      super(context, :reserve)
+    end
+  end
+
 end
