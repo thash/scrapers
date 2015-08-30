@@ -49,4 +49,7 @@ namespace :megurolib do
     end
   end
 
+  task :put_events do
+    mlib.put_all_events
+  end
 end
