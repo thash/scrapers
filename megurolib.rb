@@ -2,7 +2,10 @@ require File.expand_path('../base.rb', __FILE__)
 require 'securerandom'
 require 'digest/sha1'
 
+require './megurolib/scraper'
+
 class MeguroLib < Base
+
   self.url = 'http://www.meguro-library.jp/'
   attr_reader :dynamo
 
@@ -78,78 +81,9 @@ class MeguroLib < Base
     s.click_button '予約する'
   end
 
-  # in detail page
-  def register_book
-    unless detail_page?
-      logger.error("[#{__method__}] Not in book detail page.")
-      return false
-    end
-
-    val_of = -> (header) {
-      s.find(:xpath, "//td[./nobr/b[text()='#{header}']]/following-sibling::td").text
-    }
-
-    title  = val_of.call('タイトル').gsub(Moji.han, '')
-    author = val_of.call('著者事項')
-    isbn13 = Lisbn.new(val_of.call('ISBN')).isbn13
-
-    if dynamo.get_item(table_name: :books, key: {isbn: isbn13}).item
-      logger.info("[#{__method__}] skip -- known isbn: (#{isbn13}) #{title}")
-    else
-      dynamo.put_item(table_name: :books,
-                      item: {isbn: isbn13, title: title, author: author})
-      logger.info("[#{__method__}] add -- new book: (#{isbn13}) #{title}")
-    end
-
-    return isbn13
-  end
-
-  def put_borrowing
-    logger.debug("before: #{scan}")
-
-    login
-
-    unless my_page?
-      logger.error("[#{__method__}] Not in mypage.")
-      return false
-    end
-
-    # 行数のみ保存しておき, loop 内で毎回 DOM を取得して処理行数を進めていく
-    rows_count = borrowing_table.rows.count
-    rows_count.times do |i|
-      row = borrowing_table.rows[i]
-      cells = row.cells.map(&:text)
-
-      title = splite_title(cells[2]).first
-      hashed_title = Digest::SHA1.hexdigest(title)
-
-      # 既に登録済のイベントならスキップ
-      event = dynamo.scan(table_name: :events).items.find{|e| e['hashed_title'] == hashed_title && e['type'] == 'borrow' }
-      logger.info("[#{__method__}] skip -- known 'borrow' event for: #{title}") && next if event
-
-      item = {
-        uuid: SecureRandom.uuid,
-        isbn: nil,
-        hashed_title: hashed_title,
-        type: :borrow,
-        date: Date.parse(cells[4]).to_s
-      }
-      dynamo.put_item({ table_name: :events, item: item })
-
-      row.element.find('a').click
-      delay # detail page
-
-      # put into books table, then return back isbn-13 code.
-      isbn = register_book
-      dynamo.put_item({ table_name: :events, item: item.merge(isbn: isbn) }) if isbn
-
-      logger.info("[#{__method__}] add -- 'borrow' event for: (#{isbn}) #{title}")
-
-      s.find(:xpath, '/html/body/table[4]//a[./b]').click
-      delay # 利用状況の一覧ページへ
-    end
-
-    logger.debug("after: #{scan}")
+  def put_all_events
+    ::MeguroLib::Scraper.new(self, :borrow).scrape
+    ::MeguroLib::Scraper.new(self, :reserve).scrape
   end
 
   private def my_page?
@@ -228,24 +162,5 @@ class MeguroLib < Base
                  published_at: tds[4].text)
       end
     end
-  end
-
-
-  ############################# DynamoDB debug #############################
-  def clear_all
-    dynamo.scan(table_name: :events).items.each do |item|
-      p dynamo.delete_item(table_name: :events, key: { uuid: item['uuid'] } )
-    end
-    dynamo.scan(table_name: :books).items.each do |item|
-      p dynamo.delete_item(table_name: :books, key: { isbn: item['isbn'] } )
-    end
-    nil
-  end
-
-  def scan
-    {
-      events: dynamo.scan(table_name: :events).items,
-      books: dynamo.scan(table_name: :books).items
-    }
   end
 end
