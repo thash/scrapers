@@ -20,6 +20,7 @@ class Base
 
   def initialize
     @logger = Logger.new(STDOUT)
+    @logger.level = Logger::INFO
     @conf = YAML.load(open('secret.yml').read)[self.class.name.underscore]
     Capybara.javascript_driver = :webkit
     @session = Capybara::Session.new(:webkit)
