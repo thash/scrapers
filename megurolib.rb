@@ -95,11 +95,11 @@ class MeguroLib < Base
           end
 
   private def borrowing_table
-            scrape_table('//form[1]/table[2]')
+            scrape_table('//table[.//th[.//*[text()[contains(.,"借りている資料")]]]]')
           end
 
   private def reserving_table
-            scrape_table('//form[2]/table[2]')
+            scrape_table('//table[.//th[.//*[text()[contains(.,"予約している資料")]]]]')
           end
 
   private def splite_title(title_with_publisher)
