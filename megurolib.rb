@@ -7,13 +7,15 @@ require './megurolib/scraper'
 class MeguroLib < Base
 
   self.url = 'http://www.meguro-library.jp/'
-  attr_reader :dynamo
+  attr_reader :dynamo, :sqs
 
   def initialize
     super
-    cred = Aws::Credentials.new(conf['aws_dynamo_key'], conf['aws_dynamo_secret'])
+    cred = Aws::Credentials.new(conf['aws_library_scraper_key'], conf['aws_library_scraper_secret'])
     # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html
     @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred)
+    # http://docs.aws.amazon.com/sdkforruby/api/Aws/SQS/Client.html
+    @sqs    = Aws::SQS::Client.new(region: 'ap-northeast-1', credentials: cred)
   end
 
   def search(str)

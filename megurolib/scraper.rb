@@ -1,6 +1,8 @@
 class MeguroLib < Base
   class Scraper
 
+    SQS_URL = "https://sqs.ap-northeast-1.amazonaws.com/054142727543/books_missing_isbn"
+
     def initialize(context, type, callback=nil)
       @context = context
       @type = type
@@ -12,6 +14,12 @@ class MeguroLib < Base
 
     def method_missing(name, *args)
       @context.method(name).call(*args)
+    end
+
+    def known_event?(hashed_title, type)
+      dynamo.scan(table_name: :events).items
+        .find {|e| e['hashed_title'] == hashed_title &&
+                   e['type'] == @type.to_s }
     end
 
     def scrape
@@ -34,25 +42,60 @@ class MeguroLib < Base
         @shown_hashed_titles << hashed_title
 
         # 既に登録済のイベントならスキップ
-        event = dynamo.scan(table_name: :events).items.find{|e| e['hashed_title'] == hashed_title && e['type'] == @type.to_s }
-        logger.info("[#{__method__}] skip -- known '#{@type}' event for: #{title}") && next if event
+        if known_event?(hashed_title, @type.to_s)
+          logger.info("[#{__method__}] skip -- known '#{@type}' event for: #{title}")
+          next
+        end
 
-        item = {
+        new_event = {
           uuid: SecureRandom.uuid,
           isbn: nil,
           hashed_title: hashed_title,
           type: @type,
           date: Date.parse(cells[@date_column]).to_s
         }
-        dynamo.put_item({ table_name: :events, item: item })
+        dynamo.put_item({ table_name: :events, item: new_event })
+        logger.info("[#{__method__}] add -- '#{@type}' event for: #{title}")
+
+        # go to detail page
         row.element.find('a').click
-        delay # detail page
+        delay
 
-        # put into books table, then return back isbn-13 code.
-        isbn = put_book
-        dynamo.put_item({ table_name: :events, item: item.merge(isbn: isbn) }) if isbn
+        # put information into books table
+        isbn = Lisbn.new(val_of(s, 'ISBN')).isbn13 # nil is set if isbn row doesn't exist
+        new_book = {
+          isbn: isbn,
+          title: val_of(s, 'タイトル').gsub(Moji.han, ''),
+          author: val_of(s, '著者事項')
+        }
 
-        logger.info("[#{__method__}] add -- '#{@type}' event for: (#{isbn}) #{title}")
+        if isbn
+          # skip saving the book if it already exists.
+          if dynamo.get_item(table_name: :books, key: {isbn: isbn}).item
+            logger.info("[#{__method__}] skip -- known isbn: #{isbn} (#{new_book[:title]})")
+          else
+            # save new book
+            dynamo.put_item(table_name: :books, item: new_book)
+            logger.info("[#{__method__}] add -- new book: (#{isbn || 'isbn unknown'}) #{title}")
+
+            # update event with isbn
+            dynamo.put_item({ table_name: :events, item: new_event.merge(isbn: isbn) })
+            logger.info("[#{__method__}] update -- '#{@type}' event with isbn=#{isbn} for: #{new_book[:title]}")
+          end
+        else
+          # put ISBN lookup task into SQS, with some information.
+          sqs.send_message({
+            queue_url: SQS_URL,
+            message_body: new_book[:title],
+            message_attributes: {
+              hashed_title: { string_value: hashed_title, data_type: 'String' },
+              author: { string_value: new_book[:author], data_type: 'String' },
+              publication_info: { string_value: (val_of(s, '出版事項') rescue 'none'),
+                data_type: 'String' }
+            }
+          })
+          logger.info("[#{__method__}] ISBN missing -- send book information to SQS #{new_book[:title]}")
+        end
 
         s.find(:xpath, '/html/body/table[4]//a[./b]').click
         delay # 利用状況の一覧ページへ
@@ -61,30 +104,11 @@ class MeguroLib < Base
       logger.debug("after : #{scan}")
     end
 
-    # in detail page
-    def put_book
-      unless detail_page?
-        logger.error("[#{__method__}] Not in book detail page.")
-        return false
-      end
-
-      val_of = -> (header) {
-        s.find(:xpath, "//td[./nobr/b[text()='#{header}']]/following-sibling::td").text
-      }
-
-      title  = val_of.call('タイトル').gsub(Moji.han, '')
-      author = val_of.call('著者事項')
-      isbn13 = Lisbn.new(val_of.call('ISBN')).isbn13
-
-      if dynamo.get_item(table_name: :books, key: {isbn: isbn13}).item
-        logger.info("[#{__method__}] skip -- known isbn: (#{isbn13}) #{title}")
-      else
-        dynamo.put_item(table_name: :books,
-        item: {isbn: isbn13, title: title, author: author})
-        logger.info("[#{__method__}] add -- new book: (#{isbn13}) #{title}")
-      end
-
-      return isbn13
+    # element_present? is faster than find & rescue
+    def val_of(session, header)
+      selector = "//td[./nobr/b[text()='#{header}']]/following-sibling::td"
+      return '' unless element_present?(selector)
+      session.find(:xpath, selector).text
     end
 
     def scan
