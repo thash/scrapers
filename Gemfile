@@ -17,3 +17,6 @@ gem 'aws-sdk-core', '~> 2'
 gem 'lisbn', '~> 0.2.2'
 
 gem 'moji'
+
+# Amazon Product Advertising API
+gem 'vacuum'

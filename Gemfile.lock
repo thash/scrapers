@@ -23,12 +23,15 @@ GEM
     cliver (0.3.2)
     coderay (1.1.0)
     equalizer (0.0.9)
+    excon (0.45.4)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
     http (0.6.2)
       http_parser.rb (~> 0.6.0)
     http_parser.rb (0.6.0)
     i18n (0.6.11)
+    jeff (1.5.1)
+      excon (>= 0.22.1)
     jmespath (1.0.2)
       multi_json (~> 1.0)
     json (1.8.1)
@@ -43,6 +46,7 @@ GEM
     minitest (5.4.0)
     moji (1.6)
     multi_json (1.10.1)
+    multi_xml (0.5.5)
     multipart-post (2.0.0)
     naught (1.0.0)
     nokogiri (1.6.3.1)
@@ -80,6 +84,9 @@ GEM
       simple_oauth (~> 0.2.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    vacuum (1.3.0)
+      jeff (~> 1.0)
+      multi_xml (~> 0.5.0)
     websocket-driver (0.3.4)
     xpath (2.0.0)
       nokogiri (~> 1.3)
@@ -101,6 +108,7 @@ DEPENDENCIES
   pry
   pry-doc
   twitter
+  vacuum
 
 BUNDLED WITH
    1.10.6
