@@ -14,8 +14,6 @@ class MeguroLib < Base
     cred = Aws::Credentials.new(conf['aws_library_scraper_key'], conf['aws_library_scraper_secret'])
     # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html
     @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred)
-    # http://docs.aws.amazon.com/sdkforruby/api/Aws/SQS/Client.html
-    @sqs    = Aws::SQS::Client.new(region: 'ap-northeast-1', credentials: cred)
   end
 
   def search(str)

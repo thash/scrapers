@@ -1,8 +1,6 @@
 class MeguroLib < Base
   class Scraper
 
-    SQS_URL = "https://sqs.ap-northeast-1.amazonaws.com/054142727543/books_missing_isbn"
-
     def initialize(context, type, callback=nil)
       @context = context
       @type = type
@@ -27,7 +25,7 @@ class MeguroLib < Base
       login
 
       unless my_page?
-        logger.error("[#{__method__}] Not in mypage.")
+        logger.error("Could not move to mypage.")
         return false
       end
 
@@ -43,7 +41,7 @@ class MeguroLib < Base
 
         # 既に登録済のイベントならスキップ
         if known_event?(hashed_title, @type.to_s)
-          logger.info("[#{__method__}] skip -- known '#{@type}' event for: #{title}")
+          logger.info("skip -- known '#{@type}' event for: #{title}")
           next
         end
 
@@ -63,6 +61,7 @@ class MeguroLib < Base
 
         # put information into books table
         isbn = Lisbn.new(val_of(s, 'ISBN')).isbn13 # nil is set if isbn row doesn't exist
+        isbn = val_of(s, '書誌コード') unless isbn
         new_book = {
           isbn: isbn,
           title: val_of(s, 'タイトル').gsub(Moji.han, ''),
@@ -72,29 +71,18 @@ class MeguroLib < Base
         if isbn
           # skip saving the book if it already exists.
           if dynamo.get_item(table_name: :books, key: {isbn: isbn}).item
-            logger.info("[#{__method__}] skip -- known isbn: #{isbn} (#{new_book[:title]})")
+            logger.info("skip -- known book: (#{isbn}) #{new_book[:title]}")
           else
             # save new book
             dynamo.put_item(table_name: :books, item: new_book)
-            logger.info("[#{__method__}] add -- new book: (#{isbn || 'isbn unknown'}) #{title}")
+            logger.info("add -- new book: (#{isbn}) #{new_book[:title]}")
 
             # update event with isbn
             dynamo.put_item({ table_name: :events, item: new_event.merge(isbn: isbn) })
-            logger.info("[#{__method__}] update -- '#{@type}' event with isbn=#{isbn} for: #{new_book[:title]}")
+            logger.info("update -- '#{@type}' event with isbn=#{isbn} for: #{new_book[:title]}")
           end
         else
-          # put ISBN lookup task into SQS, with some information.
-          sqs.send_message({
-            queue_url: SQS_URL,
-            message_body: new_book[:title],
-            message_attributes: {
-              hashed_title: { string_value: hashed_title, data_type: 'String' },
-              author: { string_value: new_book[:author], data_type: 'String' },
-              publication_info: { string_value: (val_of(s, '出版事項') rescue 'none'),
-                data_type: 'String' }
-            }
-          })
-          logger.info("[#{__method__}] ISBN missing -- send book information to SQS #{new_book[:title]}")
+          logger.info("ISBN or shoshi_code missing -- #{new_book[:title]}")
         end
 
         s.find(:xpath, '/html/body/table[4]//a[./b]').click
