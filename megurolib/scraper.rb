@@ -69,6 +69,10 @@ class MeguroLib < Base
         }
 
         if isbn
+          # update event with isbn
+          dynamo.put_item({ table_name: :events, item: new_event.merge(isbn: isbn) })
+          logger.info("update -- '#{@type}' event with isbn=#{isbn} for: #{new_book[:title]}")
+
           # skip saving the book if it already exists.
           if dynamo.get_item(table_name: :books, key: {isbn: isbn}).item
             logger.info("skip -- known book: (#{isbn}) #{new_book[:title]}")
@@ -76,10 +80,6 @@ class MeguroLib < Base
             # save new book
             dynamo.put_item(table_name: :books, item: new_book)
             logger.info("add -- new book: (#{isbn}) #{new_book[:title]}")
-
-            # update event with isbn
-            dynamo.put_item({ table_name: :events, item: new_event.merge(isbn: isbn) })
-            logger.info("update -- '#{@type}' event with isbn=#{isbn} for: #{new_book[:title]}")
           end
         else
           logger.info("ISBN or shoshi_code missing -- #{new_book[:title]}")
