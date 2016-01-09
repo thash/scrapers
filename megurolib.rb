@@ -7,7 +7,7 @@ require './megurolib/scraper'
 class MeguroLib < Base
 
   self.url = 'http://www.meguro-library.jp/'
-  attr_reader :dynamo, :sqs
+  attr_reader :dynamo
 
   def initialize
     super
