@@ -14,6 +14,7 @@ gem 'capybara-webkit'
 gem 'twitter'
 
 gem 'aws-sdk-core', '~> 2'
+gem 'dymos', path: '/Users/hash/git/clone/github.com/memerelics/dymos'
 gem 'lisbn', '~> 0.2.2'
 
 gem 'moji'
