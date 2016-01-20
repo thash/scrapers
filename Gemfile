@@ -17,3 +17,7 @@ gem 'aws-sdk-core', '~> 2'
 gem 'lisbn', '~> 0.2.2'
 
 gem 'moji'
+
+group :development do
+  gem 'test-unit'
+end

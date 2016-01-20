@@ -1,0 +1,311 @@
+
+
+<html lang="ja"> 
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=emulateIE8">
+<META HTTP-equiv="Content-TYPE" CONTENT="text/html; charset=utf-8"> 
+<META HTTP-equiv="Content-Style-TYPE" CONTENT="text/css">
+
+<title>貸出・予約状況表示</title>
+
+ <style type="text/css"><!--
+ body {font-family:"Arial Unicode ＭＳ,ＭＳ Ｐゴシック";margin:0px}   
+ .fepon{ime-mode:active}
+ .fepoff{ime-mode:inactive}
+ --></style>
+ 
+<style type="text/css"><!--
+body {background-color:#F5DEB3}
+.basecolor{background-color:#F5DEB3}
+.basemark{background-color:#FFB728}
+.baseline{color:}
+.lightcolor{background-color:#FFFFE0}
+.shadow{background-color:}
+a:link{color:;text-decoration:none}
+a:visited{color:#3366FF;text-decoration:none}
+a:hover{color:#E73124;text-decoration:underline}
+a:active{color:;text-decoration:underline}
+.color_pwderr{color:red}
+.color_pwdess{color:blue}
+.color_red{color:red}
+HR.color_pwdrow{color=lightblue}
+.HighLight{background-color:yellow}
+.pathhead {
+	font-size:20px;
+	color: #000000;
+	font-weight: bold;
+	text-align: left;
+	background-color: #FFB728;
+	padding-top: 6px;
+	padding-right: 12px;
+	padding-bottom: 6px;
+	padding-left: 20px;
+	margin-top: 12px;
+	margin-right: 25px;
+	margin-bottom: 12px;
+	margin-left: 20px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-bottom-style: solid;
+	border-left-style: solid;
+}
+.pathheadcom {padding-left: 25px;}
+.HighLight{background-color:yellow}
+
+.clearbutton {
+	display: inline-block;
+	zoom: 1;
+	display: inline;
+	vertical-align: baseline;
+	outline: none;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none!important;
+	padding: 3px 10px;
+	color: #606060;
+	border: solid 1px #b7b7b7;
+	background: #ffffff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#d3d3d3));
+	background: -moz-linear-gradient(top,  #ffffff,  #c0c0c0);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#c0c0c0');
+	font-size: 12px;
+}
+.shiboributton {
+	display: inline-block;
+	zoom: 1;
+	display: inline;
+	vertical-align: baseline;
+	outline: none;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none!important;
+	padding: 3px 10px;
+	color: #606060;
+	border: solid 1px #b7b7b7;
+	background: #ffffff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#d3d3d3));
+	background: -moz-linear-gradient(top,  #ffffff,  #c0c0c0);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#c0c0c0');
+	font-size: 12px;
+}
+table.WRTCALS20 hr{
+    height:1px;
+}
+table.WRTCALS20 label{
+  	display: block;
+  	float: left;
+}
+table.WRTCALS20 ul {
+	list-style:none;
+	margin:0 ;border:0;padding: 0 ;
+	width:98%;
+}
+table.WRTCALS20 ul li {
+  	float: left;
+	width:154px;
+	table-layout : fixed;
+	word-break: break-all;
+	background-position:left;
+	background-repeat:no-repeat;
+} 
+
+table.WRTCALS20 td.subhead  { 
+    width:147px;
+}
+
+table.WRTCALS20 table.subinc  { 
+    width:100%;
+	table-layout : fixed;
+	word-break: break-all;
+} 
+
+table.WRTCALS20 table.subinc td.subcontent ul { 
+	list-style:none;
+	margin:0 0 3px 0!important;
+	border:0;
+	padding:0!important;
+}
+
+table.WRTCALS20 table.subinc td.subcontent ul li{ 
+  	float: left;
+	width:154px;
+	white-space: nowrap;
+}table.CollapsibleBox {
+    border: 1px solid #FFA500!important;
+    margin: 5px!important;
+    font-size:13px;
+}
+table.CollapsibleBox tr.CollapsibleBoxTitle {
+    background: #FFB728!important;
+    color: black!important;
+    font-weight: bold!important;
+    margin: 2px!important;
+    padding: 1px!important;
+}
+table.CollapsibleBox tr.CollapsibleBoxTitle td.cBoxTitle {
+    margin: 0px!important;
+    padding: 0px!important;
+    font-weight: bold;
+}
+table.CollapsibleBox tr.CollapsibleBoxTitle td.cBoxTitle a {
+    color:blue;
+    text-decoration:none;
+}
+table.CollapsibleBox tr.CollapsibleBoxBody td {
+	margin: 0px !important;
+	padding: 0.5em !important;
+	font-weight:normal !important;
+}
+--></style>
+
+ <META HTTP-equiv="Content-TYPE" CONTENT="text/html; charset=utf-8">
+ <META HTTP-equiv="Content-Style-TYPE" CONTENT="text/css">
+
+</head>
+
+<body>
+
+ <script language="JavaScript">
+ <!--
+  window.document.onkeydown = function() {
+    if(event.keyCode >= 112 && event.keyCode <= 123){
+       event.keyCode = 0;
+       return false;
+    }
+    if (event.ctrlKey && event.keyCode == 82) {
+    	event.keyCode = 0;
+        return false;
+    }
+  }
+ //-->
+ </script>
+ 
+
+ <script language="JavaScript">
+ <!--
+  window.document.onkeydown = function() {
+    if(event.keyCode >= 112 && event.keyCode <= 123){
+       event.keyCode = 0;
+       return false;
+    }
+    if (event.ctrlKey && event.keyCode == 82) {
+    	event.keyCode = 0;
+        return false;
+    }
+  }
+ //-->
+ </script>
+ 
+<a name="top"></a><table border=0 width=95% align=center cellpadding=5 cellspacing=5 class=basecolor><tr><td width=70><img src='/c1/img/sendmail60.gif' border=0 alt='利用者照会'></td><td align=left><table border=0 cellpadding=0 width=100%><tr><td><big><b>利用者のページ</b></big>&nbsp;&nbsp;<span style='background-color:silver;font-weight:bold'>貸出券:9999999</span></td><td align=right><table class=LoginInfo><tr>
+<td align=right class='RSVLink'><div id="rsvlink"><label>◆◆予約候補一覧◆◆(0件)</label></div></td></tr></table></td></tr></table><hr><nobr><a href=''><span class=basemark><b>&nbsp;利用者のページ&nbsp;</b></span></a>|</nobr><nobr><a href=''>&nbsp;メールアドレスの確認・変更・削除&nbsp;</a>|</nobr><nobr><a href=''>&nbsp;目黒区立図書館ホームページトップへ&nbsp;</a>|</nobr></td></tr></table><hr width=95% align=center>
+
+
+
+
+<table width=95% align=center>
+<tr>
+<td>
+&nbsp;&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+個人情報を守るため、利用状況を確認・更新後は「目黒区立図書館ホームページトップへ」をクリックしてトップ画面へ戻って下さい。<BR>
+ブラウザの「戻る」ボタンや「更新」ボタンを操作すると正常に動作しない場合があります。<BR>
+各一覧では、資料のタイトルをクリックしていただくと、その資料の詳しい内容の画面が表示されます。
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;&nbsp;
+</td>
+</tr>
+</table>
+<hr width=95% align=center>
+<table width=95% align=center>
+<tr>
+<td>
+<a href="#Lend">【　借りている資料　】へ移動します   </a>
+<a href="#Rsv">【　予約している資料　】へ移動します   </a>
+<a href="#Keep">【　マイリスト　】へ移動します  </a>
+<a href="#RsvCcl">【　取消した資料　】へ移動します  </a>
+</td>
+</tr>
+</table><form method=post name="FormLEND" action="OPWUSERINFO.CSP"><input type='hidden' name='DB' value='LIB'><input type='hidden' name='SID' value='DlfXu3Ej8Q_ganNxLWjg1_G28DBCm2DDSSPer8bukhnq'><input type='hidden' name='MODE' value='1'><input type='hidden' name='LIB' value=''><a name="Lend"></a>
+<table width=95% align=center>
+<tr>
+<td>
+<b>【　借りている資料　】</b></td></tr><tr><td colspan=2><br>
+貸出日の順に表示します。延長ができる場合は延長ボタンの表示があります。<br>通常２回まで（区外借用資料については1回)延長ができます。期間は手続きをした日から２週間です。<br>予約がある資料、返却が遅れている資料は延長できません。<br><br>延長ボタンを押すと確認の画面になります。該当のタイトル、延長後の日付を確認し、よろしければ「更新する」を押してください。<br>延長をやめる場合は「更新しない」を押してください。延長せずに元の画面に戻ります。<br>延長処理が終わると「延長しました」などと表示されます。当日は延長の必要がないのでボタンの表示がありません。
+</td>
+</tr>
+<tr><td width=40%>図書:13冊　</td></tr></table>
+<table width=95% border=1 align=center cellspacing=0 cellpadding=2><TR class=basemark><TH><small>No.</small></TH><TH><small>区分</small></TH><TH><small>借りている資料</small></TH><TH><small>資料番号</small></TH><TH><small>貸出日</small></TH><TH><small>貸出館</small></TH><TH><small>返却期限日</small></TH><TH><small>備考</small></TH><TH><small>貸出更新</small></TH><TH><small>延長回数</small></TH></TR><TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">起業したらまっさきに読む経理の本</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0729835397  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/05 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/02/02 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(1)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">図解　小さな会社のための会社のつくり方・運営のしかた</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0731475984  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/05 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/02/02 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(2)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD></TR>
+<TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">3 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">やってのける</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0732809025  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/05 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/19 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;&nbsp;延滞資料(1日) </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">延長できません。 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">4 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">株式会社のつくり方がすぐわかる本</a>　’１４～’１５年版　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0733458624  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/05 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/02/02 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(4)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD></TR>
+<TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">5 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">東京の中小企業の現状</a>　平成２５年度　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0733959910  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/05 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/02/02 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(5)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">6 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">２１世紀の貨幣論</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0734567373  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/05 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/02/02 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(6)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD></TR>
+<TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">7 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="NFO&MODE=1&LIB=&PID2=OPWUSERINFO&SRCID=7&LID=1&LISTNAME=ListLEND">機械の中の幽霊</a>　 ／  ちくま学芸文庫 [ケ１－１] </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0710473307  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/14 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(7)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">8 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "> 区外借用 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">真理と方法</a>　１　 ／  叢書・ウニベルシタス [１７５] </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "> 0723301669 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/14 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(8)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+<TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">9 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "> 区外借用 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">真理と方法</a>　３　 ／  叢書・ウニベルシタス [１７７] </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "> 0723374203 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/14 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(9)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">10 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">システムの科学</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0728359480  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/14 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(10)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+<TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">11 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "> 区外借用 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">真理と方法</a>　２　 ／  叢書・ウニベルシタス [１７６] </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "> 0730428778 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/14 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(11)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">12 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">暗黙知の次元</a>　 ／  ちくま学芸文庫 [ホ１０－１] </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0731337689  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/14 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(12)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+<TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">13 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">図書  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">快感回路</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0732268842  </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/14 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name="L(13)" value='延長'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">0 </TD></TR>
+
+</table>
+
+<table width=95%>
+<td align=right><a href="#top">トップへ</a>
+</td></table></form><form method=post name='FormRSV' action='OPWUSERINFO.CSP'><input type='hidden' name='DB' value='LIB'><input type='hidden' name='SID' value='DlfXu3Ej8Q_ganNxLWjg1_G28DBCm2DDSSPer8bukhnq'><input type='hidden' name='MODE' value='1'><input type='hidden' name='LIB' value=''><input type='hidden' name='FLG' value=''><a name="Rsv"></a>
+<table width=95% align=center>
+<tr>
+<td>
+<br><br><b>【　予約している資料　】</b></td></tr><tr><td colspan=3><A HREF=/opw/img/help/yoyakumessage1.htm target=_blank>予約している資料の状況に関するご説明です。こちらをクリックしてご覧ください。</A>
+</td>
+</tr>
+<tr><td align=left>予約件数4件（確保済1件）</td>
+</tr>
+<tr>
+<td align=left width=20%>
+<input type=button onclick="location.href=''" value='シリーズ予約組替・解除'>
+</td>
+<td width=60%>
+【準備中】【予約回送中】【確保済】以外の資料についてシリーズ予約を組み替えることができます。</td></tr></table><table width=95% border=1 align=center cellspacing=0 cellpadding=2><TR class=basemark><TH><small>No.</small></TH><TH><small>取消</small></TH><TH><small>予約している資料</small></TH><TH><small>シリーズ予約番号</small></TH><TH><small>状 況</small></TH><TH><small>予約確保期限</small></TH><TH><small>資料数</small></TH><TH><small>予約の順番</small></TH><TH><small>予約日</small></TH><TH><small>予約待ち期限</small></TH><TH><small>受取館</small></TH><TH><small>連絡方法</small></TH><TH COLSPAN=2><small>変更</small></TH></TR><TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">文法理論の諸相</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">確保済 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/23 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1/1 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2016/01/05 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">不要 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; " COLSPAN=2>&nbsp;</TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name='R("Y18501148_B12411195")' value='予約取消'><br> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">世界を破綻させた経済学者たち</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">返却待ち </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2/7 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2015/09/27 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">不要 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; " COLSPAN=2><input type=submit name='C("Y18501148_B12411195")' value='変更'> </TD></TR>
+<TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">3 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name='R("Y18763919_B12395145")' value='予約取消'><br> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">この世界が消えたあとの科学文明のつくりかた</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">返却待ち </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">4 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">26/32 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2015/11/28 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">不要 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; " COLSPAN=2><input type=submit name='C("Y18763919_B12395145")' value='変更'> </TD></TR>
+<TR class=lightcolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">4 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name='R("Y18852253_B12312195")' value='予約取消'><br> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">伝わるデザインの基本</a>　   </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">返却待ち </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">3 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2/11 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2015/12/19 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">不要 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; " COLSPAN=2><input type=submit name='C("Y18852253_B12312195")' value='変更'> </TD></TR>
+</table>
+<table width=95%>
+<td align=right><a href="#top">トップへ</a>
+</td></table></form><form method=post name='FormKEEP' action='OPWUSERINFO.CSP'><input type='hidden' name='DB' value='LIB'><input type='hidden' name='SID' value='DlfXu3Ej8Q_ganNxLWjg1_G28DBCm2DDSSPer8bukhnq'><input type='hidden' name='MODE' value='1'><input type='hidden' name='LIB' value=''><a name="Keep"></a>
+<table width=95% align=center>
+<tr>
+<td>【マイリスト】　<b><A	HREF='/opw/img/help/LOCMEGUROMypage/MyPage_MyList.htm' target='_blank'>マイリストのご説明はこちらをクリックしてご覧ください。</b></A><br>ご自分のメモ、覚書としてお使いいただくリストです。300件まで登録できます。</b><br>マイリストからシリーズ予約にすることができません。検索画面から登録しなおしてください。
+</td>
+</tr>
+</table><table width=95% border=1 align=center cellspacing=0 cellpadding=2><TR class=basemark><TH><small>No</small></TH><TH><small>処理</small></TH><TH><small>タイトル</small></TH><TH><small>登録日</small></TH><TH><small>資料状況</small></TH><TH><small>メモ</small></TH><TH><small>&nbsp;</small></TH></TR><TR class=basecolor><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name=keepdel(1) value='削除'> </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">地政学入門</a>　 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2015/06/24 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">所蔵：0(うち貸出：0)<BR>予約：0 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">予約しようとしたが「調査中」だったのでとりあえずマイリストとやらに登録 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><input type=submit name=renew(1) value='変更'> </TD></TR>
+</table>
+<table width=95%>
+<td align=right><a href="#top">トップへ</a>
+</td></table></form><form method=post name='FormRSVD' action='OPWUSERINFO.CSP'><input type='hidden' name='DB' value='LIB'><input type='hidden' name='SID' value='DlfXu3Ej8Q_ganNxLWjg1_G28DBCm2DDSSPer8bukhnq'><input type='hidden' name='MODE' value='1'><input type='hidden' name='LIB' value=''><a name="RsvCcl"></a>
+<table width=95% align=center>
+<tr>
+<td>
+<br><br><b>【　取消した資料（取消したデータは取り消し日より2ヶ月間保持されます。）　】　</b><br>館内、インターネットのさんまくんからご自分で処理された場合はWeb(内)、Web(外)と表示されます。<br>「取消した資料」の一覧からは、まとめて予約することができません。<br>一つずつ、予約を完了していただくようお願いします。<br>
+</td>
+</tr>
+</table><table width=95% border=1 align=center cellspacing=0 cellpadding=2><tr class=basemark><th><small>No.</small></th><th><small>タイトル</small></th><th><small>シリーズ名</small></th><th><small>予約日</small></th><th><small>予約待ち期限</small></th><th><small>受取館</small></th><th><small>取消区分</small></th><th><small>取消日</small></th></tr><TR class=shadow><TD style="padding: 0.5em 0em 0.5em 0.3em; ">1 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "><a href="">一般言語学講義抄</a>　 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2015/12/16 </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">&nbsp;</TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">ほげ </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; "> (WebOPAC外部) </TD><TD style="padding: 0.5em 0em 0.5em 0.3em; ">2015/12/16 </TD></TR>
+</table>
+<table width=95%>
+<td align=right><a href="#top">トップへ</a>
+</td></table></form>
+
+</body>
+
+
+
+
+
+</html>

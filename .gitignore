@@ -1,4 +1,3 @@
-*.html
 *.txt
 secret.yml
 .DS_Store
@@ -7,3 +6,6 @@ nohup.log
 
 output
 *.log
+
+*.html
+!test/*.html

@@ -35,10 +35,6 @@ class Base
     session = other_session
   end
 
-  def top
-    @session.visit self.class.url
-  end
-
   def contains_text?(text)
     if text =~ /'/
       # element_present? "//*[not(self::script) and text()[contains(.,\"#{text}\")]]"

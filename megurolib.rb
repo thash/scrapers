@@ -6,18 +6,18 @@ require './megurolib/scraper'
 
 class MeguroLib < Base
 
-  self.url = 'http://www.meguro-library.jp/'
   attr_reader :dynamo
 
-  def initialize
-    super
+  def initialize(url: 'http://www.meguro-library.jp/')
+    @url = url
+    super() # without parenthesis, arguments mismatch occurs
     cred = Aws::Credentials.new(conf['aws_library_scraper_key'], conf['aws_library_scraper_secret'])
     # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html
     @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred)
   end
 
   def search(str)
-    s.visit MeguroLib.url
+    s.visit @url
     s.fill_in :"text(1)", with: str
     s.find(:css, '#doSearch').click
 
@@ -25,7 +25,8 @@ class MeguroLib < Base
   end
 
   def login
-    top
+    s.visit @url
+    return true if my_page? # return login if mypage is already opened
     s.find(:xpath, '//*[@id="km_user_widget-2"]/div/a[2]/img').click
     s.fill_in :usercardno, with: conf['card']
     s.fill_in :userpasswd, with: conf['password']
@@ -35,6 +36,7 @@ class MeguroLib < Base
       logger.error("[#{__method__}] Login failed.")
       return false
     end
+    true
   end
 
   # 借りている資料
