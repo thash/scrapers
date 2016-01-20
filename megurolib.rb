@@ -12,8 +12,18 @@ class MeguroLib < Base
     @url = url
     super() # without parenthesis, arguments mismatch occurs
     cred = Aws::Credentials.new(conf['aws_library_scraper_key'], conf['aws_library_scraper_secret'])
-    # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html
-    @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred)
+
+    # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#initialize-instance_method
+    pattern  = '[:operation(:request_params)' +
+               ' :http_response_status_code' +
+               ' :time' +
+               ' :retries]' +
+               ' :error_class' +
+               ' :error_message' +
+               ' :http_request_headers' +
+               ' :http_response_headers' + "\n"
+    @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred,
+                                        logger: logger, log_formatter: Aws::Log::Formatter.new(pattern))
   end
 
   def search(str)
