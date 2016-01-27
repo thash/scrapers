@@ -23,6 +23,7 @@ class MeguroLib < Base
                ' :http_request_headers' +
                ' :http_response_headers' + "\n"
     @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred,
+                                        log_level: :debug,
                                         logger: logger, log_formatter: Aws::Log::Formatter.new(pattern))
   end
 
