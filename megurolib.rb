@@ -24,7 +24,7 @@ class MeguroLib < Base
                ' :http_response_headers' + "\n"
     @dynamo = Aws::DynamoDB::Client.new(region: 'ap-northeast-1', credentials: cred,
                                         log_level: :debug,
-                                        logger: logger, log_formatter: Aws::Log::Formatter.new(pattern))
+                                        logger: Logger.new(STDOUT), log_formatter: Aws::Log::Formatter.new(pattern))
   end
 
   def search(str)
