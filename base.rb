@@ -14,17 +14,22 @@ module Kernel
 end
 
 class Base
-  class_attribute :url
-  attr_reader :conf
+  attr_reader :conf, :url
   attr_accessor :session, :logger
 
+  # @url should be defined in child classes
   def initialize
+    raise 'no url given' unless url
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
     @conf = YAML.load(open('secret.yml').read)[self.class.name.underscore]
     Capybara.javascript_driver = :webkit
     @session = Capybara::Session.new(:webkit)
-    @session.visit self.class.url
+    @session.driver.headers = {
+      'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Safari/602.1.50'
+    }
+    @logger.info "visiting: #{url}"
+    @session.visit url
   end
 
   def s
@@ -32,7 +37,7 @@ class Base
   end
 
   def cd(other_session)
-    session = other_session
+    @session = other_session
   end
 
   def contains_text?(text)
