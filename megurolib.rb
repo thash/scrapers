@@ -41,7 +41,7 @@ class MeguroLib < Base
     s.find(:xpath, '//*[@id="km_user_widget-2"]/div/a[2]/img').click
     s.fill_in :usercardno, with: conf['card']
     s.fill_in :userpasswd, with: conf['password']
-    s.find(:xpath, '//table[4]//tr[2]/td[1]/table//tr[3]/td/input[1]').click
+    s.find(:xpath, '//input[@type="submit"]').click
     delay
     unless my_page?
       logger.error("[#{__method__}] Login failed.")
