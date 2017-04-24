@@ -85,18 +85,16 @@ class MeguroLib < Base
           logger.info("ISBN or shoshi_code missing -- #{new_book[:title]}")
         end
 
-        s.find(:xpath, '/html/body/table[4]//a[./b]').click
+        s.find(:xpath, "//a//*[text()[contains(., '利用状況の一覧')]]").click
         delay # 利用状況の一覧ページへ
       end
       @callback.call(@shown_hashed_titles) if @callback
       logger.debug("after : #{scan}")
     end
 
-    # element_present? is faster than find & rescue
     def val_of(session, header)
-      selector = "//td[./nobr/b[text()='#{header}']]/following-sibling::td"
-      return '' unless element_present?(selector)
-      session.find(:xpath, selector).text
+      data_table = session.find(:xpath, "//table//tr//*[text()[contains(.,'ISBN')]]/ancestor::table[1]")
+      data_table.all(:xpath, "//td//*[text()[contains(.,\'#{header}\')]]/ancestor::td[1]/following-sibling::td")[0].text
     end
 
     def scan
