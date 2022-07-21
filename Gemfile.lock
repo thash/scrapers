@@ -87,7 +87,7 @@ GEM
       memoizable (~> 0.4.0)
       naught (~> 1.0)
       simple_oauth (~> 0.2.0)
-    tzinfo (1.2.8)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     websocket-driver (0.3.4)
     xpath (2.0.0)
